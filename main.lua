@@ -53,6 +53,7 @@ local Tab = Window:CreateTab("Main")
 local AutoSkillEnabled = false
 local CoverScreen = false
 local AutoSkillTime = 30
+local messageToDisplay = ""
 
 local Tab2 = Window:CreateTab("Slime")
 local AutoClaimChest = false
@@ -78,6 +79,17 @@ local Slider = Tab:CreateSlider({
    end,
 })
 
+local Input = Tab:CreateInput({
+    Name = "Enter Message for Cover Screen",
+    CurrentValue = "",
+    PlaceholderText = "Enter a message here...",
+    RemoveTextAfterFocusLost = false,
+    Flag = "InputMessage",
+    Callback = function(Text)
+        messageToDisplay = Text
+    end,
+})
+
 local Toggle1 = Tab:CreateToggle({
    Name = "Cover Screen",
    CurrentValue = CoverScreen,
@@ -98,6 +110,20 @@ local Toggle1 = Tab:CreateToggle({
             blackFrame.BorderSizePixel = 0
             blackFrame.Parent = screenGui
             blackFrame.ZIndex = 1
+
+            local messageLabel = Instance.new("TextLabel")
+            messageLabel.Size = UDim2.new(1, 0, 1, 0)
+            messageLabel.Position = UDim2.new(0, 0, 0, 0)
+            messageLabel.BackgroundTransparency = 1
+            messageLabel.Text = messageToDisplay
+            messageLabel.TextColor3 = Color3.new(1, 1, 1)
+            messageLabel.TextSize = 50
+            messageLabel.TextWrapped = true
+            messageLabel.TextYAlignment = Enum.TextYAlignment.Center
+            messageLabel.TextXAlignment = Enum.TextXAlignment.Center
+            messageLabel.Parent = blackFrame
+            messageLabel.ZIndex = 2
+
 
         else
             local existingScreenGui = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("BlackScreenGui")
