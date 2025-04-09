@@ -8,6 +8,19 @@ local topicId = ReplicatedStorage:WaitForChild("RoundControlFolder"):WaitForChil
 local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+local playerGui = player:WaitForChild("PlayerGui")
+local gameplay = playerGui:WaitForChild("Gameplay")
+local answerInputGui = gameplay:WaitForChild("AnswerInputGui")
+local frame = answerInputGui:WaitForChild("Frame")
+local frame1 = frame:WaitForChild("Frame")
+local answerFrame = frame1:WaitForChild("AnswerFrame")
+local centerFrame = answerFrame:WaitForChild("CenterFrame")
+local inputFrame = centerFrame:WaitForChild("InputFrame")
+local inputFrameBackground = inputFrame:WaitForChild("InputFrameBackground")
+local textLabel = inputFrameBackground:WaitForChild("TextLabel")
+
 
 local Window = Rayfield:CreateWindow({
    Name = "SPELLING RACE SCRIPT",
@@ -97,4 +110,78 @@ topicId.Changed:Connect(function(newValue)
     end
 end)
 
-    
+Tab:CreateDivider("Your Divider Title")
+
+local autoClaimEnabled = false
+local timerDuration = 15 * 60
+local timeLeft = timerDuration
+local timerRunning = false
+
+local timerLabel = Tab:CreateLabel("Rewards Timer: 15:00")
+
+local function formatTime(seconds)
+    local minutes = math.floor(seconds / 60)
+    local secs = seconds % 60
+    return string.format("%02d:%02d", minutes, secs)
+end
+
+local function teleportToReward()
+    local originalPosition = humanoidRootPart.Position
+    local targetPart = game.Workspace:FindFirstChild("GroupRewards") and game.Workspace.GroupRewards:FindFirstChild("RewardCircle2")
+
+    if targetPart and targetPart:IsA("BasePart") then
+        humanoidRootPart.CFrame = CFrame.new(targetPart.Position + Vector3.new(0, 3, 0))
+        Rayfield:Notify({Title = "Auto Claim", Content = "Teleported to reward!", Duration = 3})
+        wait(0.1)
+        humanoidRootPart.CFrame = CFrame.new(originalPosition + Vector3.new(0, 3, 0))
+    else
+        Rayfield:Notify({Title = "Auto Claim", Content = "Reward not found!", Duration = 3})
+    end
+end
+
+local function startCountdown()
+    timerRunning = true
+    while timerRunning do
+        wait(1)
+
+        if autoClaimEnabled then
+            timeLeft -= 1
+            timerLabel:Set("Rewards Timer: " .. formatTime(timeLeft))
+
+            if timeLeft <= 0 then
+                teleportToReward()
+                timeLeft = timerDuration
+            end
+        else
+            timeLeft = timerDuration
+            timerLabel:Set("Rewards Timer: " .. formatTime(timeLeft))
+            timerRunning = false
+        end
+    end
+end
+
+local Toggle2 = Tab:CreateToggle({
+    Name = "Auto Claim Rewards",
+    CurrentValue = false,
+    Flag = "AutoClaim",
+    Callback = function(Value)
+        autoClaimEnabled = Value
+
+        if Value then
+            teleportToReward()
+            if not timerRunning then
+                task.spawn(startCountdown)
+            end
+        else
+            timeLeft = timerDuration
+            timerLabel:Set("Rewards Timer: " .. formatTime(timeLeft))
+        end
+    end,
+})
+
+Tab:CreateButton({
+   Name = "Force Claim Now",
+   Callback = function()
+       teleportToReward()
+   end,
+})
