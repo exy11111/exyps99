@@ -9,18 +9,6 @@ local player = Players.LocalPlayer
 local character = player.Character or player.CharacterAdded:Wait()
 local humanoid = character:WaitForChild("Humanoid")
 
-local playerGui = player:WaitForChild("PlayerGui")
-local gameplay = playerGui:WaitForChild("Gameplay")
-local answerInputGui = gameplay:WaitForChild("AnswerInputGui")
-local frame = answerInputGui:WaitForChild("Frame")
-local frame1 = frame:WaitForChild("Frame")
-local answerFrame = frame1:WaitForChild("AnswerFrame")
-local centerFrame = answerFrame:WaitForChild("CenterFrame")
-local inputFrame = centerFrame:WaitForChild("InputFrame")
-local inputFrameBackground = inputFrame:WaitForChild("InputFrameBackground")
-local textLabel = inputFrameBackground:WaitForChild("TextLabel")
-
-
 local Window = Rayfield:CreateWindow({
    Name = "SPELLING RACE SCRIPT",
    Icon = 0,
