@@ -109,15 +109,4 @@ topicId.Changed:Connect(function(newValue)
     end
 end)
 
-local Input = Tab:CreateInput({
-    Name = "Enter Message for Cover Screen",
-    CurrentValue = "",
-    PlaceholderText = "Enter a message here...",
-    RemoveTextAfterFocusLost = false,
-    Flag = "InputMessage",
-    Callback = function(Text)
-        messageToDisplay = Text
-    end,
-})
-
     
