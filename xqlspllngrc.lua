@@ -1,6 +1,9 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local submitAnswerRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("SubmitAnswerRemote")
+local redeemGroupRemote = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("RedeemGroupRemote")
+
 local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local UserInputService = game:GetService("UserInputService")
@@ -23,7 +26,7 @@ local textLabel = inputFrameBackground:WaitForChild("TextLabel")
 
 
 local Window = Rayfield:CreateWindow({
-   Name = "SPELLING RACE SCRIPT",
+   Name = "SPELLING RACE SCRIPT 3.0 by xql",
    Icon = 0,
    LoadingTitle = "SPELLING RACE SCRIPT",
    LoadingSubtitle = "by xql",
@@ -98,6 +101,11 @@ local Slider1 = Tab:CreateSlider({
 
 local Label = Tab:CreateLabel("Current Word: ")
 
+local function submitAnswer(answer)
+    local response = submitAnswerRemote:InvokeServer(answer)
+    print("Server response: ", response)
+end
+
 local function simulateTyping(text, speed)
     for i = 1, #text do
         local char = text:sub(i, i)
@@ -120,6 +128,7 @@ topicId.Changed:Connect(function(newValue)
         VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
         wait(typeSpeed)
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
+        submitAnswer(newValue) --in case nasa lobby
     end
 end)
 
@@ -136,6 +145,11 @@ local function formatTime(seconds)
     local minutes = math.floor(seconds / 60)
     local secs = seconds % 60
     return string.format("%02d:%02d", minutes, secs)
+end
+
+local function redeemReward()
+    local response = redeemGroupRemote:InvokeServer()
+    print('Server response: ', response)
 end
 
 local function teleportToReward()
@@ -164,7 +178,7 @@ local function startCountdown()
             timerLabel:Set("Rewards Timer: " .. formatTime(timeLeft))
 
             if timeLeft <= 0 then
-                teleportToReward()
+                redeemReward()
                 timeLeft = timerDuration
             end
         else
@@ -183,7 +197,7 @@ local Toggle2 = Tab:CreateToggle({
         autoClaimEnabled = Value
 
         if Value then
-            teleportToReward()
+            redeemReward()
             if not timerRunning then
                 task.spawn(startCountdown)
             end
@@ -197,7 +211,6 @@ local Toggle2 = Tab:CreateToggle({
 Tab:CreateButton({
    Name = "Force Claim Now",
    Callback = function()
-       teleportToReward()
+       redeemReward()
    end,
 })
-
