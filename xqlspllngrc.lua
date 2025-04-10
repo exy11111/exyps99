@@ -61,6 +61,7 @@ local Tab = Window:CreateTab("Main Tab")
 local autoTypeEnabled = false
 local typeSpeed = 0.02
 local currentWordValue = ""
+local waitTime = 1.75
 
 local Toggle = Tab:CreateToggle({
    Name = "Auto Type",
@@ -76,10 +77,22 @@ local Slider = Tab:CreateSlider({
    Range = {0.01, 0.5},
    Increment = 0.01,
    Suffix = "Seconds",
-   CurrentValue = typeSpeed,
+   CurrentValue = 0.02,
    Flag = "TypeSpeed",
    Callback = function(Value)
     typeSpeed = Value
+   end,
+})
+
+local Slider1 = Tab:CreateSlider({
+   Name = "Waiting time before typing (sec)",
+   Range = {1.25, 3},
+   Increment = 0.01,
+   Suffix = "Seconds",
+   CurrentValue = 1.75,
+   Flag = "waitTime",
+   Callback = function(Value)
+    waitTime = Value
    end,
 })
 
@@ -102,7 +115,7 @@ end
 topicId.Changed:Connect(function(newValue)
     Label:Set("Current Word: "..newValue)
     if autoTypeEnabled then
-        wait(1.25) --must be 1.25 or 1
+        wait(waitTime) --must be 1.25 or 1
         simulateTyping(newValue, typeSpeed)
         VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
         wait(typeSpeed)
@@ -130,9 +143,11 @@ local function teleportToReward()
     local targetPart = game.Workspace:FindFirstChild("GroupRewards") and game.Workspace.GroupRewards:FindFirstChild("RewardCircle2")
 
     if targetPart and targetPart:IsA("BasePart") then
-        humanoidRootPart.CFrame = CFrame.new(targetPart.Position + Vector3.new(0, 3, 0))
+        for i = 1, 10 do
+            humanoidRootPart.CFrame = CFrame.new(targetPart.Position + Vector3.new(0, 3, 0))
+            wait(0.001)
+        end
         Rayfield:Notify({Title = "Auto Claim", Content = "Teleported to reward!", Duration = 3})
-        wait(0.1)
         humanoidRootPart.CFrame = CFrame.new(originalPosition + Vector3.new(0, 3, 0))
     else
         Rayfield:Notify({Title = "Auto Claim", Content = "Reward not found!", Duration = 3})
@@ -185,3 +200,4 @@ Tab:CreateButton({
        teleportToReward()
    end,
 })
+
