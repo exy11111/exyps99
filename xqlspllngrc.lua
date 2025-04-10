@@ -26,7 +26,7 @@ local textLabel = inputFrameBackground:WaitForChild("TextLabel")
 
 
 local Window = Rayfield:CreateWindow({
-   Name = "SPELLING RACE SCRIPT 3.0 by xql",
+   Name = "SPELLING RACE SCRIPT 3.1 by xql",
    Icon = 0,
    LoadingTitle = "SPELLING RACE SCRIPT",
    LoadingSubtitle = "by xql",
