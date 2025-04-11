@@ -26,7 +26,7 @@ local textLabel = inputFrameBackground:WaitForChild("TextLabel")
 
 
 local Window = Rayfield:CreateWindow({
-   Name = "SPELLING RACE SCRIPT 3.1 by xql",
+   Name = "SPELLING RACE SCRIPT 3.2 by xql",
    Icon = 0,
    LoadingTitle = "SPELLING RACE SCRIPT",
    LoadingSubtitle = "by xql",
@@ -102,33 +102,36 @@ local Slider1 = Tab:CreateSlider({
 local Label = Tab:CreateLabel("Current Word: ")
 
 local function submitAnswer(answer)
-    local response = submitAnswerRemote:InvokeServer(answer)
-    print("Server response: ", response)
+    submitAnswerRemote:InvokeServer(answer)
 end
 
 local function simulateTyping(text, speed)
-    for i = 1, #text do
-        local char = text:sub(i, i)
+    for char in text:upper():gmatch(".") do
         local keyCode = Enum.KeyCode[string.upper(char)]
         
         if keyCode then
             VirtualInputManager:SendKeyEvent(true, keyCode, false, game)
-            wait(speed)
+            task.wait(speed)
             VirtualInputManager:SendKeyEvent(false, keyCode, false, game)
-            wait(speed)
+            task.wait(speed)
         end
     end
 end
 
-topicId.Changed:Connect(function(newValue)
+local connection
+
+connection = topicId.Changed:Connect(function(newValue)
     Label:Set("Current Word: "..newValue)
     if autoTypeEnabled then
-        wait(waitTime) --must be 1.25 or 1
+        task.wait(waitTime) --must be 1.25 or 1
         simulateTyping(newValue, typeSpeed)
         VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Return, false, game)
-        wait(typeSpeed)
+        task.wait(typeSpeed)
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
         submitAnswer(newValue) --in case nasa lobby
+    end
+    if not autoTypeEnabled then
+        connection:Disconnect()
     end
 end)
 
@@ -148,30 +151,14 @@ local function formatTime(seconds)
 end
 
 local function redeemReward()
-    local response = redeemGroupRemote:InvokeServer()
+    redeemGroupRemote:InvokeServer()
     print('Server response: ', response)
-end
-
-local function teleportToReward()
-    local originalPosition = humanoidRootPart.Position
-    local targetPart = game.Workspace:FindFirstChild("GroupRewards") and game.Workspace.GroupRewards:FindFirstChild("RewardCircle2")
-
-    if targetPart and targetPart:IsA("BasePart") then
-        for i = 1, 10 do
-            humanoidRootPart.CFrame = CFrame.new(targetPart.Position + Vector3.new(0, 3, 0))
-            wait(0.001)
-        end
-        Rayfield:Notify({Title = "Auto Claim", Content = "Teleported to reward!", Duration = 3})
-        humanoidRootPart.CFrame = CFrame.new(originalPosition + Vector3.new(0, 3, 0))
-    else
-        Rayfield:Notify({Title = "Auto Claim", Content = "Reward not found!", Duration = 3})
-    end
 end
 
 local function startCountdown()
     timerRunning = true
     while timerRunning do
-        wait(1)
+        task.wait(1)
 
         if autoClaimEnabled then
             timeLeft -= 1
