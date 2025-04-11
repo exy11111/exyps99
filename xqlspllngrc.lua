@@ -152,7 +152,6 @@ end
 
 local function redeemReward()
     redeemGroupRemote:InvokeServer()
-    print('Server response: ', response)
 end
 
 local function startCountdown()
