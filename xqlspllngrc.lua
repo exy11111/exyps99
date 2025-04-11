@@ -130,9 +130,6 @@ connection = topicId.Changed:Connect(function(newValue)
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Return, false, game)
         submitAnswer(newValue) --in case nasa lobby
     end
-    if not autoTypeEnabled then
-        connection:Disconnect()
-    end
 end)
 
 Tab:CreateDivider("Your Divider Title")
