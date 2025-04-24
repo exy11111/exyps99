@@ -1,3 +1,5 @@
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/exy11111/exyps99/refs/heads/main/main.lua"))()
+
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 --start auto claim chest
